@@ -1,6 +1,7 @@
 import {hot} from 'react-hot-loader/root';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Display from './display';
 
 class App extends React.Component {
   constructor(props) {
@@ -19,20 +20,30 @@ class App extends React.Component {
   }
 
   handleSubmit(event) {
-    event.preventDefault();
-    fetch('http://localhost.com:3001/rates')
+    fetch('/rates')
     .then(res => res.json())
-    .then((result) => {
+    .then((data) => {
       var container = [];
-      container.push(result);
+      container.push(data);
+      console.log('REZSULT', container);
       this.setState({points: container})
     })
+    var ctx = document.getElementById('myChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        label: this.state.name,
+        yAxisID: 'Closing Price ($)',
+        data: this.state.points
+      }
+    })
+    event.preventDefault();
   }
 
   render() {
     return (
       <div>
-        <title>Cryptocurrency Charting Tool</title>
+        <h1>Cryptocurrency Charting Tool</h1>
         <form onSubmit={this.handleSubmit}>
           <label>
             Currency Name:
@@ -41,7 +52,7 @@ class App extends React.Component {
           <input type="submit" value="submit" />
         </form>
         <canvas id="myChart" width="400" height="400"></canvas>
-        <Display points={this.state.points} />
+        <p href='https://www.coindesk.com/price/bitcoin'>Powered by CoinDesk</p>
       </div>
     )
   }

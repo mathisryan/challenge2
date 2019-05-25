@@ -15,3 +15,4 @@ function Display(props) {
   })
 }
 
+export default hot(Display);

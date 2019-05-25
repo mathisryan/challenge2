@@ -2,3 +2,4 @@ node_modules
 *.DS_Store
 ..challenge_1/public/bundle.js
 ..server.js
+public/bundle.js
