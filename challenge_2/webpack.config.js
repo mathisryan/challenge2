@@ -1,5 +1,4 @@
-﻿const path = require("path"); // if using path.resolve(__dirname, ‘[file]’)
-const webpack = require("webpack");  // if using plugins
+﻿const path = require("path");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
@@ -27,12 +26,13 @@ module.exports = {
   },
   resolve: { extensions: ["*", ".js", ".jsx"] },
   devServer: {
-    publicPath: "http://localhost:8080/dist/",
+    publicPath: "http://localhost:8080/assets/",
   },
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebPackPlugin({
-      template: 'src/index.html'
+      template: './client/index.html',
+      title: 'Cryptocurrency Charting Tool'
     })
   ]
 };

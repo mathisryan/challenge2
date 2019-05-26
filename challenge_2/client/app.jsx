@@ -1,14 +1,16 @@
 import {hot} from 'react-hot-loader/root';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Display from './display';
+import Chart from 'chart.js';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
+    this.chartRef = React.createRef();
     this.state = {
       value: '',
-      points: []
+      points: [],
+      data: []
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -24,18 +26,39 @@ class App extends React.Component {
     .then(res => res.json())
     .then((data) => {
       var container = [];
-      container.push(data);
-      console.log('REZSULT', container);
-      this.setState({points: container})
-    })
-    var ctx = document.getElementById('myChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        label: this.state.name,
-        yAxisID: 'Closing Price ($)',
-        data: this.state.points
+      var dates = Object.keys(data['bpi']);
+      var rates = Object.values(data['bpi']);
+      for(var i = 0; i < dates.length; i++) {
+        container.push({x: dates[i], y: rates[i]});
+      };
+      this.setState({
+        points: container,
+      });
+      const myChartRef = this.chartRef.current.getContext('2d');
+      new Chart(myChartRef, {
+        type: 'line',
+        data: {
+          datasets: [
+            {
+              label: 'BPI',
+              data: this.state.points
+            }
+          ]
+        },
+        options: {
+          scales: {
+              xAxes: [{
+                  type: 'time',
+                  time: {
+                      // unit: 'month'
+                      displayFormats: {
+                        month: 'MMM YYYY'
+                    }
+                  }
+              }]
+          }
       }
+      });
     })
     event.preventDefault();
   }
@@ -44,14 +67,23 @@ class App extends React.Component {
     return (
       <div>
         <h1>Cryptocurrency Charting Tool</h1>
+        <h2>Type in a Cryptocurrency</h2>
         <form onSubmit={this.handleSubmit}>
           <label>
             Currency Name:
-            <input type="text" value={this.state.value} onChange={this.handleChange} />
+            <input type='text' value={this.state.value} onChange={this.handleChange} />
           </label>
-          <input type="submit" value="submit" />
+          <input type='submit' value='submit' />
         </form>
-        <canvas id="myChart" width="400" height="400"></canvas>
+        <div>
+          {this.state.points.length > 0 &&
+            <div>
+              <canvas
+                id='myChart'
+                ref={this.chartRef}
+              />
+            </div>}
+        </div>
         <p href='https://www.coindesk.com/price/bitcoin'>Powered by CoinDesk</p>
       </div>
     )
